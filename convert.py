@@ -36,11 +36,11 @@ for event in calendar.events:
             score1, score2 = score_part.strip().split("-")
             score1 = score1.strip()
             score2 = score2.strip()
-            cleaned_summary = f"{team1.strip()} {score1} vs {score2} {team2.strip()}"
+            cleaned_summary = f"{team1.strip()} {score1} v {score2} {team2.strip()}"
         except Exception:
-            cleaned_summary = f"{team1.strip()} vs {team2.strip()}"
+            cleaned_summary = f"{team1.strip()} v {team2.strip()}"
     else:
-        cleaned_summary = f"{team1.strip()} vs {team2.strip()}"
+        cleaned_summary = f"{team1.strip()} v {team2.strip()}"
 
     # Copy over the original start time
     start = event.begin.astimezone(london_tz)
