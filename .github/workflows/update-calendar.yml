@@ -34,4 +34,4 @@ jobs:
           else
             git commit -m "Update Wales results calendar"
             git push
-
+          fi
