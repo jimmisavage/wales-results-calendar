@@ -4,7 +4,7 @@ from datetime import datetime
 import pytz
 
 # Download original calendar
-url = "https://www.skysports.com/calendars/football/fixtures/wales"
+url = "https://calendar.google.com/calendar/ical/f5vqdqdrbglm52e0na8jo9k4no%40group.calendar.google.com/public/basic.ics"
 response = requests.get(url)
 calendar = Calendar(response.text)
 
