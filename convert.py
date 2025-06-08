@@ -1,7 +1,7 @@
 from ics import Calendar, Event
 import requests
 
-ics_url = "https://fixtur.es/en/team/gb-wls.ics"
+ics_url = "https://calendar.google.com/calendar/ical/f5vqdqdrbglm52e0na8jo9k4no%40group.calendar.google.com/public/basic.ics"
 response = requests.get(ics_url)
 calendar = Calendar(response.text)
 
