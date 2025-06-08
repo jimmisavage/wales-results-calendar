@@ -1,37 +1,57 @@
-from ics import Calendar, Event
 import requests
+from ics import Calendar, Event
+from datetime import datetime
+import pytz
 
-ics_url = "https://calendar.google.com/calendar/ical/f5vqdqdrbglm52e0na8jo9k4no%40group.calendar.google.com/public/basic.ics"
-response = requests.get(ics_url)
+# Download original calendar
+url = "https://www.skysports.com/calendars/football/fixtures/wales"
+response = requests.get(url)
 calendar = Calendar(response.text)
 
-new_calendar = Calendar()
+# Timezone setup
+london_tz = pytz.timezone("Europe/London")
+
+# Create a new calendar
+output_calendar = Calendar()
 
 for event in calendar.events:
-    summary = event.name
-    if summary and '(' in summary and ')' in summary:
+    summary = event.name or ""
+    if "Wales" not in summary:
+        continue  # skip non-Wales games
+
+    # Extract teams
+    try:
+        team1, rest = summary.split(" - ", 1)
+        if "[" in rest:
+            team2, _ = rest.split(" [", 1)
+        else:
+            team2 = rest
+    except ValueError:
+        continue
+
+    # Get score from original summary
+    if "(" in summary and ")" in summary:
         try:
-            main_part, score_part = summary.rsplit('(', 1)
-            score = score_part.strip(')').strip()
-            if '-' not in score:
-                continue
+            score_part = summary.split("(")[-1].split(")")[0]
+            score1, score2 = score_part.strip().split("-")
+            score1 = score1.strip()
+            score2 = score2.strip()
+            cleaned_summary = f"{team1.strip()} {score1} - {score2} {team2.strip()}"
+        except Exception:
+            cleaned_summary = f"{team1.strip()} vs {team2.strip()}"
+    else:
+        cleaned_summary = f"{team1.strip()} vs {team2.strip()}"
 
-            teams = main_part.strip().split(' - ')
-            if len(teams) == 2:
-                home, away = teams
-                new_summary = f"{home.strip()} {score} {away.strip()}"
+    # Copy over the original start time
+    start = event.begin.astimezone(london_tz)
 
-                new_event = Event()
-                new_event.name = new_summary
-                new_event.begin = event.begin
-                new_event.end = event.end
-                new_event.uid = event.uid
-                new_event.description = event.description
-                new_event.location = event.location
+    new_event = Event()
+    new_event.name = cleaned_summary
+    new_event.begin = start
+    new_event.end = start + (event.end - event.begin) if event.end else start
+    new_event.uid = event.uid
+    output_calendar.events.add(new_event)
 
-                new_calendar.events.add(new_event)
-        except:
-            continue
-
-with open("index.ics", "w") as f:
-    f.write(str(new_calendar))
+# Save to file
+with open("index.ics", "w", encoding="utf-8") as f:
+    f.writelines(output_calendar.serialize_iter())
