@@ -19,7 +19,7 @@ jobs:
           python-version: "3.11"
 
       - name: Install dependencies
-        run: pip install ics
+        run: pip install ics requests
 
       - name: Run calendar conversion
         run: python convert.py
@@ -34,3 +34,4 @@ jobs:
           else
             git commit -m "Update Wales results calendar"
             git push
+
