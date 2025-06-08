@@ -11,20 +11,20 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout
+      - name: Checkout repo
         uses: actions/checkout@v3
 
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: "3.11"
+          python-version: 3.11
 
       - name: Install dependencies
-        run: pip install ics requests
+        run: |
+          pip install requests ics pytz
 
-      - name: Run calendar conversion
+      - name: Run script
         run: python convert.py
 
       - name: Commit and push if changed
@@ -36,5 +36,5 @@ jobs:
             echo "No changes to commit."
           else
             git commit -m "Update Wales results calendar"
-            git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }} HEAD:${{ github.ref }}
+            git push
           fi
